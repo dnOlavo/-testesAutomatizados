@@ -18,4 +18,16 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     // Método para buscar clientes contendo parte do nome (case insensitive)
     @Query("SELECT c FROM Client c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Client> findClientsByNameContainingIgnoreCase(@Param("name") String name);
+
+    // Método para buscar clientes com salários superiores a um valor
+    @Query("SELECT c FROM Client c WHERE c.salary > :salary")
+    List<Client> findClientsBySalaryGreaterThan(@Param("salary") Double salary);
+
+    // Método para buscar clientes com salários inferiores a um valor
+    @Query("SELECT c FROM Client c WHERE c.salary < :salary")
+    List<Client> findClientsBySalaryLessThan(@Param("salary") Double salary);
+
+    // Método para buscar clientes com salários dentro de uma faixa de valores
+    @Query("SELECT c FROM Client c WHERE c.salary BETWEEN :minSalary AND :maxSalary")
+    List<Client> findClientsBySalaryBetween(@Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary);
 }
