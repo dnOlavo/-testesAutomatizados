@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.iftm.client.entities.Client;
 
 import java.util.List;
+import java.time.Instant;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
@@ -30,4 +31,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     // Método para buscar clientes com salários dentro de uma faixa de valores
     @Query("SELECT c FROM Client c WHERE c.salary BETWEEN :minSalary AND :maxSalary")
     List<Client> findClientsBySalaryBetween(@Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary);
+
+    // Método para buscar clientes por faixa de data de nascimento
+    List<Client> findClientByBirthDateBetween(Instant startDate, Instant endDate);
 }
