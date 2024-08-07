@@ -21,16 +21,16 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     List<Client> findClientsByNameContainingIgnoreCase(@Param("name") String name);
 
     // Método para buscar clientes com salários superiores a um valor
-    @Query("SELECT c FROM Client c WHERE c.salary > :salary")
-    List<Client> findClientsBySalaryGreaterThan(@Param("salary") Double salary);
+    @Query("SELECT c FROM Client c WHERE c.income > :income")
+    List<Client> findClientsByIncomeGreaterThan(@Param("income") Double income);
 
     // Método para buscar clientes com salários inferiores a um valor
-    @Query("SELECT c FROM Client c WHERE c.salary < :salary")
-    List<Client> findClientsBySalaryLessThan(@Param("salary") Double salary);
+    @Query("SELECT c FROM Client c WHERE c.income < :income")
+    List<Client> findClientsByIncomeLessThan(@Param("income") Double salary);
 
     // Método para buscar clientes com salários dentro de uma faixa de valores
-    @Query("SELECT c FROM Client c WHERE c.salary BETWEEN :minSalary AND :maxSalary")
-    List<Client> findClientsBySalaryBetween(@Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary);
+    @Query("SELECT c FROM Client c WHERE c.income BETWEEN :minIncome AND :maxIncome")
+    List<Client> findClientsByIncomeBetween(@Param("minIncome") Double minIncome, @Param("maxIncome") Double maxIncome);
 
     // Método para buscar clientes por faixa de data de nascimento
     List<Client> findClientByBirthDateBetween(Instant startDate, Instant endDate);
