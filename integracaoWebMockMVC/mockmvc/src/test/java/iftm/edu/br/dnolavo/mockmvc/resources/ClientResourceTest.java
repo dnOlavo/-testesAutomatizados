@@ -184,4 +184,56 @@ public class ClientResourceTest {
         result.andExpect(jsonPath("$.content", hasSize(4))); // Esperando 4 clientes cujo CPF contém "106"
         result.andExpect(jsonPath("$.content[0].name").value("Conceição Evaristo"));
     }
+
+    @Test
+    public void insert_ShouldCreateClient() throws Exception {
+        ClientDTO clientDTO = new ClientDTO(null, "Novo Cliente", "12345678910", 3500.0, Instant.now(), 1);
+        String json = objectMapper.writeValueAsString(clientDTO);
+
+        ResultActions result = mockMVC.perform(post("/clients/")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isCreated());
+        result.andExpect(jsonPath("$.name").value("Novo Cliente"));
+        result.andExpect(jsonPath("$.cpf").value("12345678910"));
+    }
+
+    @Test
+    public void update_ShouldUpdateClient_WhenIdExists() throws Exception {
+        long existingId = 1L;
+        ClientDTO clientDTO = new ClientDTO(existingId, "Cliente Atualizado", "12345678910", 5000.0, Instant.now(), 2);
+        String json = objectMapper.writeValueAsString(clientDTO);
+
+        ResultActions result = mockMVC.perform(put("/clients/{id}", existingId)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.name").value("Cliente Atualizado"));
+        result.andExpect(jsonPath("$.income").value(5000.0));
+    }
+
+    @Test
+    public void delete_ShouldReturnNoContent_WhenIdExists() throws Exception {
+        long existingId = 1L;
+
+        ResultActions result = mockMVC.perform(delete("/clients/{id}", existingId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void delete_ShouldReturnNotFound_WhenIdDoesNotExist() throws Exception {
+        long nonExistingId = 100L;
+
+        ResultActions result = mockMVC.perform(delete("/clients/{id}", nonExistingId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNotFound());
+        result.andExpect(jsonPath("$.error").value("Resource not found"));
+    }
 }
