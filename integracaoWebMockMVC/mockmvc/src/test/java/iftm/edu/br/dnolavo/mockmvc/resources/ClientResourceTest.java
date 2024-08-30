@@ -96,4 +96,48 @@ public class ClientResourceTest {
 
 
     }
+
+    @BeforeEach
+    void setUp() throws Exception {
+        // Inserir os dados iniciais
+        clientRepository.deleteAll();
+        clientRepository.saveAll(List.of(
+            new Client(null, "Conceição Evaristo", "10619244881", 1500.0, Instant.parse("2020-07-13T20:50:00Z"), 2),
+            new Client(null, "Lázaro Ramos", "10619244881", 2500.0, Instant.parse("1996-12-23T07:00:00Z"), 2)
+            // outros clientes conforme a base fornecida
+        ));
+    }
+
+    @Test
+    public void findAll_ShouldReturnAllClients() throws Exception {
+        ResultActions result = mockMVC.perform(get("/clients")
+            .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.content").isArray());
+        result.andExpect(jsonPath("$.content", hasSize(12))); // Esperando 12 clientes
+        result.andExpect(jsonPath("$.content[0].name").value("Conceição Evaristo"));
+    }
+
+    @Test
+    public void findById_ShouldReturnClient_WhenIdExists() throws Exception {
+        long existingId = 1L;
+        ResultActions result = mockMVC.perform(get("/clients/{id}", existingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.id").value(existingId));
+        result.andExpect(jsonPath("$.name").value("Conceição Evaristo"));
+    }
+
+    @Test
+    public void findById_ShouldReturnNotFound_WhenIdDoesNotExist() throws Exception {
+        long nonExistingId = 100L;
+        ResultActions result = mockMVC.perform(get("/clients/{id}", nonExistingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNotFound());
+        result.andExpect(jsonPath("$.error").value("Resource not found"));
+    }
 }
+
